@@ -1,6 +1,7 @@
 import { deleteDnsRecordsApi, DNSRecordTypeEnum, resolveDnsRecordApi } from "@/lib/common/schema/dns-records";
 import { ApiRequest, ApiResponse, createEndpoint, endpointsWrapper, onMethodNotSupported } from "@/lib/server/nextEndpointHelper";
 import { authAndRateLimit } from "@/middleware/authRateLimit";
+import { logDnsQueryUseCase } from "@/services/dnsQueryLogger.service";
 import { deleteDnsRecordsUseCase } from "@/services/dnsRecords.service";
 import { resolveHostnameToIp } from "@/utils/dnsRules";
 import * as yup from "yup";
@@ -16,6 +17,14 @@ const resolveDnsRecord = async (
     const decodedHostname = decodeURIComponent(hostname as string).toLowerCase().trim();
 
     const result = await resolveHostnameToIp(decodedHostname);
+
+    void logDnsQueryUseCase({
+        hostname: decodedHostname,
+        recordType: result.recordType,
+        resolvedIps: result.resolvedIps,
+        chain: result.chain,
+        clientIp: req.headers['x-real-ip'] as string || req.socket.remoteAddress || null,
+    });
 
     return res.status(200).json({
         hostname: decodedHostname,
