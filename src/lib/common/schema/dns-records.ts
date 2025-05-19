@@ -32,7 +32,7 @@ export interface resolveDnsRecordApi {
         query: Partial<{
             hostname: string;
         }>;
-        body: {}
+
     };
     response: {
         hostname: string,
@@ -47,7 +47,7 @@ export interface getDnsRecordsApi {
         query: Partial<{
             hostname: string;
         }>;
-        body: {}
+
     };
     response: {
         hostname: string,
@@ -63,7 +63,7 @@ export interface deleteDnsRecordsApi {
             value: string;
 
         }>;
-        body: {}
+
     };
     response: { success: boolean, message: string } | { message: string };
 }

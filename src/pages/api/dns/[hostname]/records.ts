@@ -1,5 +1,6 @@
 import { DNSRecordType, getDnsRecordsApi } from "@/lib/common/schema/dns-records";
 import { ApiRequest, ApiResponse, createEndpoint, endpointsWrapper, onMethodNotSupported } from "@/lib/server/nextEndpointHelper";
+import { authAndRateLimit } from "@/middleware/authRateLimit";
 import { getDnsRecordsUseCase } from "@/services/dnsRecords.service";
 
 
@@ -24,5 +25,5 @@ const getDnsRecord = async (
 };
 
 export default endpointsWrapper(
-    createEndpoint().get(getDnsRecord).all(onMethodNotSupported)
+    createEndpoint().use(authAndRateLimit()).get(getDnsRecord).all(onMethodNotSupported)
 );

@@ -1,5 +1,6 @@
 import { addDnsRecordApi, DNSRecordTypeEnum } from "@/lib/common/schema/dns-records";
 import { ApiRequest, ApiResponse, createEndpoint, endpointsWrapper, onMethodNotSupported } from "@/lib/server/nextEndpointHelper";
+import { authAndRateLimit } from "@/middleware/authRateLimit";
 import { addDnsRecordUseCase, getDnsRecordsUseCase } from "@/services/dnsRecords.service";
 import { validateDnsRecordConflict } from "@/utils/dnsRules";
 import * as yup from "yup";
@@ -60,7 +61,7 @@ const createDnsRecord = async (
     const existingRecords = await getDnsRecordsUseCase(hostname);
 
     const conflictMessage = validateDnsRecordConflict(type, value, existingRecords);
-    
+
     if (conflictMessage) {
         return res.status(409).json({ message: conflictMessage });
     }
@@ -74,5 +75,5 @@ const createDnsRecord = async (
 };
 
 export default endpointsWrapper(
-    createEndpoint().post(createDnsRecord).all(onMethodNotSupported)
+    createEndpoint().use(authAndRateLimit()).post(createDnsRecord).all(onMethodNotSupported)
 );

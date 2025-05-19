@@ -1,5 +1,6 @@
 import { deleteDnsRecordsApi, DNSRecordTypeEnum, resolveDnsRecordApi } from "@/lib/common/schema/dns-records";
 import { ApiRequest, ApiResponse, createEndpoint, endpointsWrapper, onMethodNotSupported } from "@/lib/server/nextEndpointHelper";
+import { authAndRateLimit } from "@/middleware/authRateLimit";
 import { deleteDnsRecordsUseCase } from "@/services/dnsRecords.service";
 import { resolveHostnameToIp } from "@/utils/dnsRules";
 import * as yup from "yup";
@@ -22,7 +23,6 @@ const resolveDnsRecord = async (
         recordType: result.recordType,
         pointsTo: result.chain.length > 1 ? result.chain[1] : null,
     });
-
 };
 
 const deleteDnsRecordQuerySchema = yup
@@ -64,6 +64,7 @@ const deleteDnsRecord = async (
 export default endpointsWrapper(
     createEndpoint()
         .get(resolveDnsRecord)
+        .use(authAndRateLimit()) // Added after the get method internally to let users resolve the hostname without auth
         .delete(deleteDnsRecord)
         .all(onMethodNotSupported)
 );
