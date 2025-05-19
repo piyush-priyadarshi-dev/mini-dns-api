@@ -1,40 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Mini DNS API – Backend Developer Assessment
 
-## Getting Started
+A production-ready Mini DNS API service that mimics realistic DNS behavior using TypeScript, Next.js, and PostgreSQL.
 
-First, run the development server:
+It supports key DNS record types, enforces real-world constraints (like CNAME vs A rules), and includes a senior-level asynchronous logging mechanism.
+
+---
+
+## Live Demo
+
+> Base URL: [https://mini-dns.piyushpriyadarshi.dev](https://mini-dns.piyushpriyadarshi.dev)
+
+---
+
+##  Postman API Collection
+
+Explore all endpoints with request/response examples here:  
+[Mini DNS Postman Collection](https://red-firefly-292308.postman.co/workspace/AdmitSpot~a0955b4b-6b28-480d-ae10-bb16aa124702/collection/24728942-d39db7de-3e4c-4cb4-bb13-747bdeb9232c?action=share&creator=24728942)
+
+---
+
+## Features
+
+- Add DNS Records (`A`, `CNAME`, `MX`, `TXT`)
+- Resolve Hostnames with:
+  - Multi-level CNAME chaining
+  - Circular reference detection
+- Get all records for a hostname
+- Delete a specific record
+- Enforced real-world DNS constraints:
+  - Only one `CNAME` per hostname
+  - No mixing of `CNAME` with other record types
+  - Multiple `A` records allowed
+
+---
+
+##  Tech Stack
+
+- **Backend**: Next.js (API Routes)
+- **Language**: TypeScript
+- **Database**: PostgreSQL (via Knex.js)
+- **Validation**: Yup
+- **Rate Limiting**: rate-limiter-flexible
+- **Async Logging**: via `void`
+- **UUIDs**: v4 standard
+- **Deployment**: Netlify + PostgreSQL (RDS)
+
+---
+
+##  Setup & Running Locally
 
 ```bash
+git clone https://github.com/your-username/mini-dns-api.git
+cd mini-dns-api
+
+# Install dependencies
+npm install
+
+# Create .env.local
+cp .env.sample .env
+# Fill in your PostgreSQL DATABASE_URL and API_KEY
+
+# Run DB migrations
+npm run migrate
+
+# Start the server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+---
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+##  Authentication & Rate Limiting
+All routes are protected with:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- x-api-key header (check .env.sample)
+- Rate-limited: max 30 requests per minute per key
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+##  Authentication & Rate Limiting
+DNS Query Logging
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+An async background task logs:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Hostname
+- Record type
+- Resolved IPs
+- CNAME chain
+- Client IP
+- Timestamp
 
-## Deploy on Vercel
+This is handled via `void` function call to prevent blocking response flow.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Logs are stored in the dns_query_logs table and can be extended for analytics. 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+---
+
+##  AI Usage Declaration
+AI tools were used in limited, assistive capacity during early planning and code refinement.
+
+A summary of the questions asked can be found in the `ai-usage.docx` file. All code was reviewed, written, and refactored manually to meet the requirements.
+
+
+---
+
+##  Code Base Attribution
+Some foundational components in this project — including API handler structure (nextEndpointHelper.ts), service/use case pattern, interface typing, and global DB error handling — were reused from my own internal base project.
+
+That base was originally built nearly 3 years ago and has evolved over time to serve as a boilerplate for backend-heavy projects. All code reused from it was written and maintained by me.
+
+This allowed me to move faster, maintain consistency, and focus more on domain-specific logic rather than boilerplate setup.
+

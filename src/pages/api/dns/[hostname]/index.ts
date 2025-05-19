@@ -17,15 +17,17 @@ const resolveDnsRecord = async (
     const decodedHostname = decodeURIComponent(hostname as string).toLowerCase().trim();
 
     const result = await resolveHostnameToIp(decodedHostname);
-
-    void logDnsQueryUseCase({
-        hostname: decodedHostname,
-        recordType: result.recordType,
-        resolvedIps: result.resolvedIps,
-        chain: result.chain,
-        clientIp: req.headers['x-real-ip'] as string || req.socket.remoteAddress || null,
-    });
-
+    try {
+        void logDnsQueryUseCase({
+            hostname: decodedHostname,
+            recordType: result.recordType,
+            resolvedIps: result.resolvedIps,
+            chain: result.chain,
+            clientIp: req.headers['x-real-ip'] as string || req.socket.remoteAddress || null,
+        });
+    } catch (error) {
+        // DO nothing
+    }
     return res.status(200).json({
         hostname: decodedHostname,
         resolvedIps: result.resolvedIps,

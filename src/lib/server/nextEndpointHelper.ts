@@ -1,10 +1,33 @@
 import cors from 'cors';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter, expressWrapper } from 'next-connect';
+import { sanitizeDBError } from '../common/errors/dbErrorSanitizer';
+import { logger } from '../common/logger';
 
-export const onError = (error: Error, req: NextApiRequest, res: NextApiResponse) => {
-    console.error('API Error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+
+export const onError = (
+    err: unknown,
+    req: NextApiRequest,
+    res: NextApiResponse
+) => {
+    const isDev = process.env.ENVIRONMENT !== "production";
+    const error = err instanceof Error ? err : new Error("Unexpected error");
+
+    const { isDbError, message: sanitizedMessage } = sanitizeDBError(error);
+
+    logger.error("API ERROR", {
+        method: req.method,
+        url: req.url,
+        message: error.message,
+        code: (error as any)?.code,
+        isDbError,
+        stack: error.stack,
+    });
+
+    res.status(500).json({
+        success: false,
+        message: isDev ? error.message : sanitizedMessage,
+    });
 };
 
 export const onMethodNotSupported = async (req: NextApiRequest, res: NextApiResponse) => {
