@@ -2,7 +2,7 @@
 
 A production-ready Mini DNS API service that mimics realistic DNS behavior using TypeScript, Next.js, and PostgreSQL.
 
-It supports key DNS record types, enforces real-world constraints (like CNAME vs A rules), and includes a senior-level asynchronous logging mechanism.
+It supports key DNS record types, enforces real-world constraints (like CNAME vs A rules), and includes a high-level asynchronous logging mechanism.
 
 ---
 
@@ -50,7 +50,7 @@ Explore all endpoints with request/response examples here:
 ##  Setup & Running Locally
 
 ```bash
-git clone https://github.com/your-username/mini-dns-api.git
+git clone https://github.com/piyush-priyadarshi-dev/mini-dns-api.git
 cd mini-dns-api
 
 # Install dependencies
@@ -95,14 +95,6 @@ An async background task logs:
 This is handled via `void` function call to prevent blocking response flow.
 
 Logs are stored in the dns_query_logs table and can be extended for analytics. 
-
-
----
-
-##  AI Usage Declaration
-AI tools were used in limited, assistive capacity during early planning and code refinement.
-
-A summary of the questions asked can be found in the `ai-usage.docx` file. All code was reviewed, written, and refactored manually to meet the requirements.
 
 
 ---
